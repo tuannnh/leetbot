@@ -42,9 +42,9 @@ def get_requests():
 
 
 def run_streamlit():
-    os.system('streamlit run ./streamlit_app.py --server.port 11130')
+    os.system('streamlit run ./streamlit_app.py --server.port 8501')
 
 
 if __name__ == '__main__':
     threading.Thread(target=run_streamlit).start()
-    uvicorn.run(app, host="0.0.0.0", port=11129)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
