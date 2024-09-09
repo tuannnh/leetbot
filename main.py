@@ -30,7 +30,7 @@ def take_screenshot():
 
 
 def send_message(answer):
-    url = "http://localhost:11129/api/answers"
+    url = "http://10.1.1.99:11129/api/answers"
     payload = {
         "answer": f"{answer}"
     }

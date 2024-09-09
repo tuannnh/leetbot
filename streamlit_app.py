@@ -16,7 +16,7 @@ answer_list.write('No incoming answers')
 
 # @st.cache_data
 def fetch_requests():
-    response = requests.get('http://localhost:11129/api/answers')
+    response = requests.get('http://localhost:8000/api/answers')
     if response.status_code == 200:
         return response.json()
     return []

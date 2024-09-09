@@ -7,4 +7,4 @@ load_dotenv()
 # Get environment variables
 OPEN_API_KEY = os.getenv("OPEN_API_KEY")
 
-console_enable=True
+console_enable=False
