@@ -23,7 +23,7 @@
 
     async function fetchAnswers() {
         try {
-            const response = await fetch('http://10.1.1.111:8333/api/answers');
+            const response = await fetch('http://localhost:8080/api/answers');
             if (response.ok) {
                 answers = await response.json();
                 document.getElementById('answers').innerText = answers;
