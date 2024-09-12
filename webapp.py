@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import threading
 import os
+from fastapi.responses import HTMLResponse
 import uvicorn
 
 app = FastAPI()
@@ -41,10 +42,15 @@ def get_requests():
     return answer
 
 
-def run_streamlit():
-    os.system('streamlit run ./streamlit_app.py --server.port 8501')
+# def run_streamlit():
+#     os.system('streamlit run ./streamlit_app.py --server.port 8501')
+
+@app.get("/", response_class=HTMLResponse)
+def read_root():
+    with open("index.html", "r") as file:
+        return file.read()
 
 
 if __name__ == '__main__':
-    threading.Thread(target=run_streamlit).start()
+    # threading.Thread(target=run_streamlit).start()
     uvicorn.run(app, host="0.0.0.0", port=8000)

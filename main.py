@@ -1,21 +1,11 @@
 import pyautogui
-import keyboard
 import requests
 from PIL import Image
 import pytesseract
-import openai
-import config
-from config import console_enable, OPEN_API_KEY
 
-
-class Chatbot:
-    def __init__(self):
-        self.context = [{"role": "system",
-                         "content": "Please answer the questions shortly, no need to explain. Ignore the rest of the text that seems meaningless."}]
-
-    def ask_question(self, question):
-        answer, self.context = chat_with_gpt(question, self.context)
-        return answer
+from config import CONSOLE_ENABLE
+from pynput import keyboard
+from bot import Bot
 
 
 def take_screenshot():
@@ -23,16 +13,17 @@ def take_screenshot():
     screenshot.save("screenshot.png")
     text = extract_text_from_image("screenshot.png")
     answer = bot.ask_question(text)
-    if not console_enable:
+    if not CONSOLE_ENABLE:
         send_message(answer)
     else:
         print(answer)
 
 
 def send_message(answer):
+    # url = "http://localhost:8333/api/answers"
     url = "http://10.1.1.99:11129/api/answers"
     payload = {
-        "answer": f"{answer}"
+        "answer": answer
     }
     # Sending a POST request with json payload
     response = requests.post(url, json=payload)
@@ -50,27 +41,27 @@ def extract_text_from_image(image_path):
     return text
 
 
-def chat_with_gpt(prompt, context=[]):
-    context.append({"role": "user", "content": prompt})
-    response = openai.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=context
-    )
-    answer = response.choices[0].message.content
-    context.append({"role": "assistant", "content": answer})
-    return answer, context
-
-
-# OpenAI API key
-openai.api_key = config.OPEN_API_KEY
-
 # Initialize chatbot
-bot = Chatbot()
+bot = Bot()
 
-# Set up the keyboard shortcut (e.g., Ctrl+Shift+S)
-# Set the hotkey as backtick (`)
-keyboard.add_hotkey("`", take_screenshot)
+print('Listening keyboard events...')
+
+
+# Set up the keyboard listener for the backtick (`) key
+def on_press(key):
+    try:
+        # print('Key pressed: {0}'.format(key))
+        if key == keyboard.Key.alt_l:
+            # if key.char == '`':
+            take_screenshot()
+    except AttributeError:
+        pass
+
+
+# Start the mouse and keyboard listeners
+keyboard_listener = keyboard.Listener(on_press=on_press)
+
+keyboard_listener.start()
 
 # Keep the script running
-print("Press '`' to take a screenshot and get answers.")
-keyboard.wait("esc")  # Press "esc" to exit the script
+keyboard_listener.join()

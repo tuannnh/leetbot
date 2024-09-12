@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeetBot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        #answers {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>LeetBot Answers</h1>
+<div id="answers">No incoming answers</div>
+<script>
+    let answers = '';
+
+    async function fetchAnswers() {
+        try {
+            const response = await fetch('http://10.1.1.111:8333/api/answers');
+            if (response.ok) {
+                answers = await response.json();
+                document.getElementById('answers').innerText = answers;
+
+            } else {
+                console.error('Error fetching answers:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching answers:', error);
+        }
+    }
+
+    setInterval(fetchAnswers, 1000);
+</script>
+</body>
+</html>
