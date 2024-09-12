@@ -2,9 +2,8 @@ import pyautogui
 import requests
 from PIL import Image
 import pytesseract
-
+import keyboard
 from config import CONSOLE_ENABLE
-from pynput import keyboard
 from bot import Bot
 
 
@@ -46,22 +45,6 @@ bot = Bot()
 
 print('Listening keyboard events...')
 
-
-# Set up the keyboard listener for the backtick (`) key
-def on_press(key):
-    try:
-        # print('Key pressed: {0}'.format(key))
-        if key == keyboard.Key.alt_l:
-            # if key.char == '`':
-            take_screenshot()
-    except AttributeError:
-        pass
-
-
-# Start the mouse and keyboard listeners
-keyboard_listener = keyboard.Listener(on_press=on_press)
-
-keyboard_listener.start()
-
-# Keep the script running
-keyboard_listener.join()
+keyboard.add_hotkey("ctrl", take_screenshot)
+# keyboard.add_hotkey("`", take_screenshot)
+keyboard.wait()
