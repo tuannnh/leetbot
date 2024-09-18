@@ -1,17 +1,18 @@
-import pyautogui
 import requests
-from PIL import Image
-import pytesseract
+from PIL import ImageGrab
 import keyboard
 from config import CONSOLE_ENABLE
 from bot import Bot
+import subprocess
+from pynput import keyboard
 
 
 def take_screenshot():
-    screenshot = pyautogui.screenshot()
+    screenshot = ImageGrab.grab()
     screenshot.save("screenshot.png")
     text = extract_text_from_image("screenshot.png")
-    answer = bot.ask_question(text)
+    answer = bot.ask_question(text) if text else 'No answer detected'
+
     if not CONSOLE_ENABLE:
         send_message(answer)
     else:
@@ -35,9 +36,17 @@ def send_message(answer):
 
 
 def extract_text_from_image(image_path):
-    image = Image.open(image_path)
-    text = pytesseract.image_to_string(image)
-    return text
+    try:
+        result = subprocess.run(['tesseract', image_path, 'stdout'], capture_output=True, text=True, check=True)
+        extracted_text = result.stdout  # The extracted text is stored in the stdout
+        return extracted_text
+
+        # You can now use the extracted_text for further processing
+    except subprocess.CalledProcessError as e:
+        print(f"Error occurred while running Tesseract: {e}")
+    # text = pytesseract.image_to_string(image)
+    # text = unidecode(text)
+    return None
 
 
 # Initialize chatbot
@@ -45,6 +54,15 @@ bot = Bot()
 
 print('Listening keyboard events...')
 
-keyboard.add_hotkey("ctrl", take_screenshot)
-# keyboard.add_hotkey("`", take_screenshot)
-keyboard.wait()
+
+def on_press(key):
+    try:
+        if key == keyboard.Key.alt_r:
+            take_screenshot()
+    except AttributeError:
+        pass
+
+
+keyboard_listener = keyboard.Listener(on_press=on_press)
+keyboard_listener.start()
+keyboard_listener.join()
